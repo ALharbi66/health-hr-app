@@ -4,11 +4,25 @@ import pandas as pd
 # إعداد واجهة التطبيق
 st.set_page_config(page_title="مستشار لائحة الصحة القابضة", layout="wide")
 
-# إعداد مظهر وتلوين خانة البحث والاتجاه العام
+# هندسة التصميم الحديث لإجبار كامل عناصر التطبيق على التحول من اليمين إلى اليسار (RTL)
 st.markdown(
     """
     <style>
-    /* تلوين وتظليل خانة البحث بلون متميز وجذاب */
+    /* 1. قلب اتجاه التطبيق بالكامل وكل الحاويات الداخلية */
+    .stApp, [data-testid="stMain"], [data-testid="block-container"], .element-container {
+        direction: rtl !important;
+        text-align: right !important;
+    }
+    
+    /* 2. ضبط اتجاه التبويبات (Tabs) لتنطلق من اليمين لليسار */
+    div[data-testid="stTabs"] button {
+        direction: rtl !important;
+    }
+    div[data-testid="stTabs"] {
+        direction: rtl !important;
+    }
+    
+    /* 3. تظليل وتلوين خانة البحث وضبط نصوصها من اليمين */
     div[data-testid="stTextInput"] input {
         background-color: #eef7f4 !important; /* لون تظليل أخضر هادئ */
         border: 2px solid #2e7d32 !important; 
@@ -19,11 +33,29 @@ st.markdown(
         direction: rtl !important;
     }
     
-    /* تنسيق أزرار المسح */
+    /* 4. ضبط محاذاة العناوين التوضيحية فوق خانة البحث */
+    div[data-testid="stTextInput"] label, div[data-testid="stTextInput"] p {
+        text-align: right !important;
+        direction: rtl !important;
+        width: 100% !important;
+    }
+    
+    /* 5. محاذاة أزرار المسح جهة اليمين وتلوينها */
+    div.stButton {
+        text-align: right !important;
+        direction: rtl !important;
+    }
     .stButton button {
         background-color: #ffebee !important;
         color: #c62828 !important;
         border: 1px solid #ef9a9a !important;
+        border-radius: 6px !important;
+    }
+    
+    /* 6. إجبار نصوص خلايا وعناوين الجدول على المحاذاة اليمينية */
+    th, td, .stDataFrame div {
+        text-align: right !important;
+        direction: rtl !important;
     }
     </style>
     """,
@@ -65,7 +97,7 @@ try:
         else:
             filtered_mat = materials
 
-        # عرض الجدول من اليمين لليسار مع حذف عمود الترقيم التلقائي نهائياً
+        # عرض الجدول العربي مع إخفاء عمود الترقيم التلقائي
         st.dataframe(filtered_mat, use_container_width=True, hide_index=True)
 
     with tab2:
@@ -87,7 +119,7 @@ try:
         else:
             filtered_pen = penalties
 
-        # عرض جدول العقوبات من اليمين لليسار مع حذف عمود الترقيم التلقائي نهائياً
+        # عرض جدول العقوبات العربي مع إخفاء عمود الترقيم التلقائي
         st.dataframe(filtered_pen, use_container_width=True, hide_index=True)
 
 except FileNotFoundError:
