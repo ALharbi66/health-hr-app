@@ -4,46 +4,23 @@ import pandas as pd
 # إعداد واجهة التطبيق
 st.set_page_config(page_title="مستشار لائحة الصحة القابضة", layout="wide")
 
-# تطبيق التنسيق الشامل من اليمين إلى اليسار (RTL) وتلوين خانات البحث
+# تطبيق التنسيق الشامل لتلوين خانات البحث وضبط المحاذاة
 st.markdown(
     """
     <style>
-    /* قلب اتجاه التطبيق بالكامل من اليمين لليسار */
-    .stApp {
-        direction: RTL !important;
-        text-align: right !important;
-    }
-    
-    /* ضبط اتجاه التبويبات والمستندات */
-    div[data-testid="stTabs"] {
-        direction: RTL !important;
-    }
-    button[data-testid="stMarkdownContainer"] {
-        text-align: right !important;
-    }
-    
-    /* تظليل خانة البحث بلون خلفية مميز وهادئ */
+    /* تلوين وتظليل خانة البحث بلون متميز وجذاب */
     div[data-testid="stTextInput"] input {
-        direction: RTL !important;
-        text-align: right !important;
-        background-color: #f0f7f4 !important; /* لون تظليل مريح للعين */
-        border: 2px solid #a3cdf1 !important; /* إطار خفيف */
+        background-color: #eef7f4 !important; /* لون تظليل هادئ ومميز */
+        border: 2px solid #2e7d32 !important; /* إطار أخضر خفيف */
         border-radius: 8px !important;
         font-weight: bold !important;
+        color: #1b5e20 !important;
     }
     
     /* ضبط محاذاة نصوص العناوين لخانات البحث */
     div[data-testid="stTextInput"] label p {
-        text-align: right !important;
         font-size: 16px !important;
-    }
-    
-    /* ضبط محاذاة جداول البيانات */
-    div[data-testid="stDataFrame"] {
-        direction: RTL !important;
-    }
-    th, td {
-        text-align: right !important;
+        font-weight: bold !important;
     }
     </style>
     """,
@@ -52,7 +29,7 @@ st.markdown(
 
 st.title("🔍 نظام البحث الذكي في لائحة الموارد البشرية")
 
-# قراءة البيانات من ملف الإكسل الخاص بك
+# قراءة البيانات من ملف الإكسل
 @st.cache_data
 def load_data():
     file_name = "لائحة_الموارد_البشرية.xlsx"
@@ -81,12 +58,15 @@ try:
             st.session_state.mat_query = ""
             st.rerun()
         
-        # تصفية الجدول بناءً على البحث وإظهاره في الأسفل
+        # تصفية الجدول وقلب ترتيب الأعمدة برمجياً لتبدأ من اليمين (الرقم -> الموضوع -> النص)
         if st.session_state.mat_query:
             filtered_mat = materials[materials.astype(str).apply(lambda x: x.str.contains(st.session_state.mat_query, case=False)).any(axis=1)]
-            st.dataframe(filtered_mat, use_container_width=True)
+            # إعادة ترتيب الأعمدة لتجبر إكسل وبايثون على عرضها من اليمين لليسار
+            display_mat = filtered_mat[['الرقم', 'الموضوع', 'النص القانوني ومضمون المادة']]
+            st.dataframe(display_mat, use_container_width=True)
         else:
-            st.dataframe(materials, use_container_width=True)
+            display_mat = materials[['الرقم', 'الموضوع', 'النص القانوني ومضمون المادة']]
+            st.dataframe(display_mat, use_container_width=True)
 
     with tab2:
         st.subheader("ابحث عن أي مخالفة لمعرفة عقوبتها")
@@ -103,12 +83,16 @@ try:
             st.session_state.pen_query = ""
             st.rerun()
         
-        # تصفية جدول العقوبات وإظهاره في الأسفل
+        # تصفية جدول العقوبات وقلب ترتيب الأعمدة برمجياً
+        columns_order_pen = ['الرقم', 'نوع وتصنيف المخالفة', 'وصف المخالفة الدقيق', 'العقوبة الأولى', 'العقوبة الثانية', 'العقوبة الثالثة', 'العقوبة الرابعة', 'ملاحظات مشتركة وإضافية']
+        
         if st.session_state.pen_query:
             filtered_pen = penalties[penalties.astype(str).apply(lambda x: x.str.contains(st.session_state.pen_query, case=False)).any(axis=1)]
-            st.dataframe(filtered_pen, use_container_width=True)
+            display_pen = filtered_pen[columns_order_pen]
+            st.dataframe(display_pen, use_container_width=True)
         else:
-            st.dataframe(penalties, use_container_width=True)
+            display_pen = penalties[columns_order_pen]
+            st.dataframe(display_pen, use_container_width=True)
 
 except FileNotFoundError:
     st.error("يرجى التأكد من أن ملف الإكسل مرفوع باسم 'لائحة_الموارد_البشرية.xlsx' في المستودع.")
