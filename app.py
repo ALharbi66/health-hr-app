@@ -40,16 +40,14 @@ st.markdown(
         width: 100% !important;
     }
     
-    /* 5. محاذاة أزرار المسح جهة اليمين وتلوينها */
-    div.stButton {
-        text-align: right !important;
-        direction: rtl !important;
-    }
-    .stButton button {
+    /* 5. محاذاة أزرار المسح وتنسيقها لتظهر بشكل كامل ومتناسق */
+    div.stButton button {
+        width: 100% !important;
         background-color: #ffebee !important;
         color: #c62828 !important;
         border: 1px solid #ef9a9a !important;
         border-radius: 6px !important;
+        font-weight: bold !important;
     }
     
     /* 6. إجبار نصوص خلايا وعناوين الجدول على المحاذاة اليمينية */
@@ -87,7 +85,7 @@ try:
         search_mat = st.text_input("اكتب كلمة دلالية للبحث في المواد (مثل: إجازة، نقل، تجربة):", value=st.session_state.mat_query, key="mat_input")
         st.session_state.mat_query = search_mat
 
-        if st.button("🗑️ مسح كلمة البحث عن المواد"):
+        if st.button("🗑️ مسح البحث", key="clear_mat"):
             st.session_state.mat_query = ""
             st.rerun()
         
@@ -109,7 +107,7 @@ try:
         search_pen = st.text_input("اكتب كلمة دلالية للبحث في العقوبات (مثل: غياب، تأخر، زي، تدخين):", value=st.session_state.pen_query, key="pen_input")
         st.session_state.pen_query = search_pen
 
-        if st.button("🗑️ مسح كلمة البحث عن العقوبات"):
+        if st.button("🗑️ مسح البحث", key="clear_pen"):
             st.session_state.pen_query = ""
             st.rerun()
         
