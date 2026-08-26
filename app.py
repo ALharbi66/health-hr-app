@@ -4,11 +4,11 @@ import pandas as pd
 # إعداد واجهة التطبيق
 st.set_page_config(page_title="مستشار لائحة الصحة القابضة", layout="wide")
 
-# إعداد أنماط التصميم (CSS) لضبط الواجهة وتلوين خانات البحث بدقة
+# إعداد مظهر وتلوين خانة البحث والاتجاه العام
 st.markdown(
     """
     <style>
-    /* تلوين وتظليل خانة البحث بلون متميز */
+    /* تلوين وتظليل خانة البحث بلون متميز وجذاب */
     div[data-testid="stTextInput"] input {
         background-color: #eef7f4 !important; /* لون تظليل أخضر هادئ */
         border: 2px solid #2e7d32 !important; 
@@ -24,34 +24,6 @@ st.markdown(
         background-color: #ffebee !important;
         color: #c62828 !important;
         border: 1px solid #ef9a9a !important;
-    }
-
-    /* تنسيق جدول HTML المخصص ليدعم اليمني لليسار بنسبة 100% */
-    .rtl-table {
-        width: 100%;
-        direction: rtl !important;
-        text-align: right !important;
-        border-collapse: collapse;
-        margin-top: 15px;
-        font-family: sans-serif;
-    }
-    .rtl-table th {
-        background-color: #2e7d32;
-        color: white;
-        padding: 12px;
-        border: 1px solid #ddd;
-        text-align: right !important;
-    }
-    .rtl-table td {
-        padding: 10px;
-        border: 1px solid #ddd;
-        text-align: right !important;
-    }
-    .rtl-table tr:nth-child(even) {
-        background-color: #f9f9f9;
-    }
-    .rtl-table tr:hover {
-        background-color: #f1f1f1;
     }
     </style>
     """,
@@ -87,16 +59,14 @@ try:
             st.session_state.mat_query = ""
             st.rerun()
         
-        # تصفية وعرض المواد عبر جدول HTML المتوافق مع الـ RTL
+        # تصفية المواد
         if st.session_state.mat_query:
             filtered_mat = materials[materials.astype(str).apply(lambda x: x.str.contains(st.session_state.mat_query, case=False)).any(axis=1)]
         else:
-            materials
             filtered_mat = materials
 
-        # تحويل الجدول إلى HTML لعرضه من اليمين لليسار إجبارياً
-        html_mat = filtered_mat.to_html(classes='rtl-table', index=False)
-        st.markdown(html_mat, unsafe_allow_html=True)
+        # عرض الجدول من اليمين لليسار مع حذف عمود الترقيم التلقائي نهائياً
+        st.dataframe(filtered_mat, use_container_width=True, hide_index=True)
 
     with tab2:
         st.subheader("ابحث عن أي مخالفة لمعرفة عقوبتها")
@@ -111,15 +81,14 @@ try:
             st.session_state.pen_query = ""
             st.rerun()
         
-        # تصفية وعرض العقوبات عبر جدول HTML المتوافق مع الـ RTL
+        # تصفية جدول العقوبات
         if st.session_state.pen_query:
             filtered_pen = penalties[penalties.astype(str).apply(lambda x: x.str.contains(st.session_state.pen_query, case=False)).any(axis=1)]
         else:
             filtered_pen = penalties
 
-        # تحويل جدول العقوبات إلى HTML
-        html_pen = filtered_pen.to_html(classes='rtl-table', index=False)
-        st.markdown(html_pen, unsafe_allow_html=True)
+        # عرض جدول العقوبات من اليمين لليسار مع حذف عمود الترقيم التلقائي نهائياً
+        st.dataframe(filtered_pen, use_container_width=True, hide_index=True)
 
 except FileNotFoundError:
     st.error("يرجى التأكد من أن ملف الإكسل مرفوع باسم 'لائحة_الموارد_البشرية.xlsx' في المستودع.")
